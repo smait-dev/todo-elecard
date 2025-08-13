@@ -11,6 +11,6 @@ Route::prefix('v1')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::middleware('auth:api')->group(function () {
         Route::get('me', [AuthController::class, 'me'])->name('me');
+        Route::apiResource('tasks', TaskController::class);
     });
 });
-
