@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Task;
 
 use App\Models\Task;
@@ -9,7 +11,9 @@ class TaskRepository implements TaskRepositoryInterface
 {
     public function getTasks(int $userId, int $limit, int $offset): Collection
     {
-        return Task::query()->where('user_id', $userId)
+        return Task::query()
+            ->select(['id', 'title', 'description', 'due_date', 'status', 'created_at'])
+            ->where('user_id', $userId)
             ->limit($limit)
             ->offset($offset)
             ->orderBy('created_at', 'desc')
