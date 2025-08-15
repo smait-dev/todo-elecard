@@ -25,7 +25,7 @@ class TaskService implements TaskServiceInterface
         $limit = $params['limit'] ?? $this->maxLimit;
         $offset = $params['offset'] ?? 0;
 
-        return $this->repository->getTasks(Auth::id(), $limit, $offset);
+        return $this->repository->getTasks(Auth::id(), (int)$limit, (int)$offset);
     }
 
     public function createTask(array $data): Task
