@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Auth\LoginRequest;
+use App\Http\Requests\Api\V1\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Requests\Api\V1\Auth\LoginRequest;
-use App\Requests\Api\V1\Auth\RegisterRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\JWTGuard;
@@ -20,7 +21,7 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        User::query()->create([ // todo стоило бы тоже вынести?
+        User::query()->create([
             'username' => $request->username,
             'password' => Hash::make($request->password),
         ]);
@@ -38,23 +39,17 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
-    }
-
-    public function me(): JsonResponse
-    {
-        return response()->json(auth()->user());
-    }
-
-    protected function respondWithToken(string $token): JsonResponse
-    {
         /** @var JWTGuard $auth */
         $auth = auth('api');
-
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => $auth->factory()->getTTL() * 60
         ]);
+    }
+
+    public function me(): JsonResponse
+    {
+        return response()->json(new UserResource(auth()->user()));
     }
 }
