@@ -43,8 +43,8 @@ class TaskController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Доступ запрещен.'], 403);
         }
         try {
-            $this->taskService->createTask($request->validated());
-            return response()->json(['status' => 'success']);
+            $task = $this->taskService->createTask($request->validated());
+            return response()->json(['status' => 'success', 'id' => $task->id]);
         } catch (\Exception) {
             return response()->json(['status' => 'error', 'message' => 'Ошибка при добавлении задачи.'], 500);
         }
