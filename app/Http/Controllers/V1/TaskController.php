@@ -30,18 +30,12 @@ class TaskController extends Controller
 
     public function index(IndexTaskRequest $request): JsonResponse|ResourceCollection
     {
-        if (!auth()->check()) {
-            return response()->json(['status' => 'error', 'message' => 'Доступ запрещен.'], 403);
-        }
         $tasks = $this->taskService->getTasks($request->validated());
         return TaskResource::collection($tasks);
     }
 
     public function store(StoreTaskRequest $request): JsonResponse
     {
-        if (!auth()->check()) {
-            return response()->json(['status' => 'error', 'message' => 'Доступ запрещен.'], 403);
-        }
         try {
             $task = $this->taskService->createTask($request->validated());
             return response()->json(['status' => 'success', 'id' => $task->id]);
@@ -69,6 +63,7 @@ class TaskController extends Controller
 
     public function show(int $id): TaskResource|JsonResponse
     {
+
         try {
             $task = Task::query()->findOrFail($id);
             $this->authorize('view', $task);
@@ -80,11 +75,10 @@ class TaskController extends Controller
         }
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(Task $task): JsonResponse
     {
         try {
-            $task = Task::query()->findOrFail($id);
-            $this->authorize('delete', $task);
+            $this->authorize('destroy', $task);
             $this->taskService->deleteTask($task);
             return response()->json(['status' => 'success']);
         } catch (ModelNotFoundException) {
