@@ -23,9 +23,9 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
-        <env name="DB_CONNECTION" value="mysql"/>
-        <env name="DB_DATABASE" value="todo_test"/>
-        <env name="DB_USERNAME" value="root"/>
-        <env name="DB_PASSWORD" value="123456789"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+        <env name="APP_KEY" value="base64:2o7vYHlpeNS84Hze5mQ1vZvs0iWL1jwvsKtNPvUfrtY="/>
+        <env name="JWT_SECRET" value="JJYw4Saz8wW42f2y9pixFSns0iduaFMynTbYnQSVefbMVisca7WjujZKOPKOW2Ao"/>
     </php>
 </phpunit>
