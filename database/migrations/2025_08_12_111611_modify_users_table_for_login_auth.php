@@ -9,7 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['name', 'email', 'email_verified_at']);
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->dropColumn(['name', 'email', 'email_verified_at']);
+            } else {
+                $table->string('name')->nullable()->change();
+                $table->string('email')->nullable()->change();
+                $table->string('email_verified_at')->nullable()->change();
+            }
             $table->string('username')->unique()->after('id');
         });
 
