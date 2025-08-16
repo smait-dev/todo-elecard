@@ -54,7 +54,7 @@ class LoginTest extends TestCase
         $response->assertStatus(200);
         $response->assertExactJson([
             'username' => $user->username,
-            'registered' => $user->created_at->toJSON(),
+            'registered' => $user->created_at->addHours(7)->format('H:i:s d.m.Y'),
         ]);
     }
 }
