@@ -22,28 +22,28 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e) {
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Требуется авторизация.'
+                'message' => 'Authentication required.'
             ], 403);
         });
 
         $exceptions->render(function (AuthorizationException $e) {
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Требуется авторизация.'
+                'message' => 'Access denied.'
             ], 403);
         });
 
         $exceptions->render(function (AccessDeniedHttpException $e) {
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Требуется авторизация.'
+                'message' => 'Access forbidden.'
             ], 403);
         });
 
         $exceptions->render(function (ValidationException $e) {
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Ошибка валидации.',
+                'message' => 'Validation failed.',
                 'errors'  => $e->errors(),
             ], 422);
         });
