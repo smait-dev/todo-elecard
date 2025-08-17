@@ -14,7 +14,7 @@ class UserResource extends JsonResource
     {
         return [
             'username' => $this->username ?? '',
-            'registered' => $this->created_at?->addHours(7)->format('H:i:s d.m.Y') ?? '', // todo не лучшее решение
+            'registered' => $this->created_at?->addHours(7)->format('H:i:s d.m.Y') ?? '', // не лучшее решение
 //            'updated_at' => $this->updated_at->format('Y-m-d H:i'),
         ];
     }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Responses\ApiResponse;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -26,7 +27,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json(['status' => 'success'], 201);
+        return ApiResponse::success(status: 201);
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -36,12 +37,12 @@ class AuthController extends Controller
         /** @var bool|string $token */
         $token = auth('api')->attempt($credentials);
         if (!$token) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return ApiResponse::error('Unauthorized.', 401);
         }
 
         /** @var JWTGuard $auth */
         $auth = auth('api');
-        return response()->json([
+        return ApiResponse::success([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => $auth->factory()->getTTL() * 60
@@ -50,6 +51,6 @@ class AuthController extends Controller
 
     public function me(): JsonResponse
     {
-        return response()->json(new UserResource(auth()->user()));
+        return ApiResponse::success(new UserResource(auth()->user()));
     }
 }

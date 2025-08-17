@@ -9,13 +9,12 @@ use App\Http\Requests\Api\V1\Task\IndexTaskRequest;
 use App\Http\Requests\Api\V1\Task\StoreTaskRequest;
 use App\Http\Requests\Api\V1\Task\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
+use App\Http\Responses\ApiResponse;
 use App\Models\Task;
 use App\Services\Task\TaskServiceInterface;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -28,65 +27,55 @@ class TaskController extends Controller
         $this->taskService = $taskService;
     }
 
-    public function index(IndexTaskRequest $request): JsonResponse|ResourceCollection
+    public function index(IndexTaskRequest $request): JsonResponse
     {
-        $tasks = $this->taskService->getTasks($request->validated());
-        return TaskResource::collection($tasks);
+        try {
+            $tasks = $this->taskService->getTasks($request->validated());
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return ApiResponse::error('Failed to retrieve tasks.');
+        }
+        return ApiResponse::success(TaskResource::collection($tasks));
     }
 
     public function store(StoreTaskRequest $request): JsonResponse
     {
         try {
             $task = $this->taskService->createTask($request->validated());
-            return response()->json(['status' => 'success', 'id' => $task->id]);
-        } catch (\Exception) {
-            return response()->json(['status' => 'error', 'message' => 'Ошибка при добавлении задачи.'], 500);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return ApiResponse::error('Failed to save tasks.');
         }
+        return ApiResponse::success(['id' => $task->id]);
     }
 
-    public function update(UpdateTaskRequest $request, $id): JsonResponse
+    public function update(UpdateTaskRequest $request, Task $task): JsonResponse
     {
+        $this->authorize('update', $task);
         try {
-            $task = Task::query()->findOrFail($id);
-            $this->authorize('update', $task);
             $this->taskService->updateTask($task, $request->validated());
-        } catch (ModelNotFoundException) {
-            return response()->json(['status' => 'error', 'message' => 'Задача не найдена.'], 404);
-        } catch (AuthorizationException) {
-            return response()->json(['status' => 'error', 'message' => 'Доступ запрещен.'], 403);
-        } catch (\Exception) {
-            return response()->json(['status' => 'error', 'message' => 'Ошибка при обновлении задачи.'], 500);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return ApiResponse::error('Failed to update tasks.');
         }
-
-        return response()->json(['status' => 'success']);
+        return ApiResponse::success();
     }
 
-    public function show(int $id): TaskResource|JsonResponse
+    public function show(Task $task): JsonResponse
     {
-
-        try {
-            $task = Task::query()->findOrFail($id);
-            $this->authorize('view', $task);
-            return new TaskResource($task);
-        } catch (ModelNotFoundException) {
-            return response()->json(['status' => 'error', 'message' => 'Задача не найдена.'], 404);
-        } catch (AuthorizationException) {
-            return response()->json(['status' => 'error', 'message' => 'Доступ запрещен.'], 403);
-        }
+        $this->authorize('view', $task);
+        return ApiResponse::success(new TaskResource($task));
     }
 
     public function destroy(Task $task): JsonResponse
     {
+        $this->authorize('destroy', $task);
         try {
-            $this->authorize('destroy', $task);
             $this->taskService->deleteTask($task);
-            return response()->json(['status' => 'success']);
-        } catch (ModelNotFoundException) {
-            return response()->json(['status' => 'error', 'message' => 'Задача не найдена'], 404);
-        } catch (AuthorizationException) {
-            return response()->json(['status' => 'error', 'message' => 'Доступ запрещен'], 403);
-        } catch (\Exception) {
-            return response()->json(['status' => 'error', 'message' => 'Ошибка при удалении задачи'], 500);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return ApiResponse::error('Failed to delete tasks.');
         }
+        return ApiResponse::success();
     }
 }
