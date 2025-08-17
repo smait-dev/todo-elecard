@@ -57,7 +57,7 @@
 						"exec": [
 							"if (pm.response.code === 200) {\r",
 							"    const response = pm.response.json();\r",
-							"    pm.collectionVariables.set(\"auth_token\", response.access_token);\r",
+							"    pm.collectionVariables.set(\"auth_token\", response.data.access_token);\r",
 							"}"
 						],
 						"type": "text/javascript",
@@ -129,7 +129,7 @@
 						"exec": [
 							"if (pm.response.code === 200) {\r",
 							"    const response = pm.response.json();\r",
-							"    pm.collectionVariables.set(\"first_task_id\", response.id);\r",
+							"    pm.collectionVariables.set(\"first_task_id\", response.data.id);\r",
 							"}"
 						],
 						"type": "text/javascript",
@@ -182,7 +182,7 @@
 						"exec": [
 							"if (pm.response.code === 200) {\r",
 							"    const response = pm.response.json();\r",
-							"    pm.collectionVariables.set(\"second_task_id\", response.id);\r",
+							"    pm.collectionVariables.set(\"second_task_id\", response.data.id);\r",
 							"}"
 						],
 						"type": "text/javascript",
@@ -479,7 +479,7 @@
 						"exec": [
 							"if (pm.response.code === 200) {\r",
 							"    const response = pm.response.json();\r",
-							"    pm.collectionVariables.set(\"auth_token_user2\", response.access_token);\r",
+							"    pm.collectionVariables.set(\"auth_token_user2\", response.data.access_token);\r",
 							"}"
 						],
 						"type": "text/javascript",
