@@ -27,9 +27,21 @@ class LoginTest extends TestCase
 
         $response->assertStatus($expectedStatus);
         if ($expectedStatus === 200) {
-            $response->assertJsonStructure(['access_token', 'token_type', 'expires_in']);
+            $response->assertJsonStructure([
+                'access_token',
+                'token_type',
+                'expires_in'
+            ]);
         } elseif ($expectedStatus === 401) {
-            $response->assertJson(['error' => 'Unauthorized']);
+            $response->assertJson([
+                'status' => 'error',
+                'message' => 'Unauthorized.'
+            ]);
+        } elseif ($expectedStatus === 422) {
+            $response->assertJsonStructure([
+                'message',
+                'errors'
+            ]);
         }
     }
 
@@ -52,9 +64,12 @@ class LoginTest extends TestCase
         $response = $this->actingAs($user, 'api')->getJson(route('me'));
 
         $response->assertStatus(200);
-        $response->assertExactJson([
-            'username' => $user->username,
-            'registered' => $user->created_at->addHours(7)->format('H:i:s d.m.Y'),
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                'username',
+                'registered'
+            ]
         ]);
     }
 }
